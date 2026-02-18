@@ -296,7 +296,7 @@
             </div>
             
             <div class="pb-4 text-center">
-                <p class="text-[10px] text-slate-600 uppercase font-bold tracking-[0.2em]">Party Edition v2.0</p>
+                <p id="wordCountLabel" class="text-[10px] text-slate-600 uppercase font-bold tracking-[0.2em]">Carregando Palavras...</p>
             </div>
         </div>
 
@@ -340,6 +340,7 @@
     </div>
 
     <script>
+        // Lista padrão de segurança caso o arquivo TXT falhe
         let commonWords = ["FOCO", "FORÇA", "FÉ", "VIDA", "PAZ", "BRASIL", "UNIÃO", "SONHO", "IDEIA"];
         let state = {
             selectedWord: "",
@@ -348,15 +349,33 @@
         };
         let wakeLock = null;
 
+        // Tenta carregar as palavras do arquivo TXT
         async function loadWords() {
+            const label = document.getElementById('wordCountLabel');
             try {
-                const response = await fetch('palavras.txt');
+                // Tenta carregar com 'Palavras.txt' (conforme seu arquivo) ou 'palavras.txt'
+                let response = await fetch('Palavras.txt');
+                if (!response.ok) response = await fetch('palavras.txt');
+
                 if (response.ok) {
                     const text = await response.text();
-                    const lines = text.split(/\r?\n/).map(l => l.trim().toUpperCase()).filter(l => l.length > 0);
-                    if (lines.length > 0) commonWords = lines;
+                    const lines = text.split(/\r?\n/)
+                                      .map(l => l.trim().toUpperCase())
+                                      .filter(l => l.length > 0);
+                    
+                    if (lines.length > 0) {
+                        commonWords = lines;
+                        label.textContent = `${commonWords.length} Palavras Disponíveis`;
+                    } else {
+                        label.textContent = `Party Edition v2.0`;
+                    }
+                } else {
+                    label.textContent = `Party Edition v2.0`;
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.warn("Não foi possível carregar o arquivo TXT (provavelmente CORS local). Usando lista padrão.");
+                label.textContent = `Party Edition v2.0`;
+            }
         }
 
         function setTheme(color) {
@@ -709,6 +728,7 @@
             `;
         }
 
+        // Inicia o carregamento assim que a página abre
         window.onload = loadWords;
     </script>
 </body>
