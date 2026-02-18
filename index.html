@@ -67,7 +67,6 @@
             margin-top: 0.5rem;
         }
 
-        /* --- TEMAS --- */
         .color-palette {
             display: flex;
             gap: 0.6rem;
@@ -154,7 +153,7 @@
         .grid-container {
             flex: 1;
             overflow-y: auto;
-            padding: 1rem 0 140px 0;
+            padding: 0.5rem 0 140px 0;
             mask-image: linear-gradient(to bottom, transparent, black 5%, black 90%, transparent);
         }
 
@@ -263,6 +262,24 @@
             letter-spacing: 0.3em;
             text-transform: uppercase;
         }
+
+        /* --- CONTROLES MELHORADOS --- */
+        .helper-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .helper-btn:active { transform: translateY(2px); background: rgba(255,255,255,0.1); }
+        .helper-btn span { font-size: 9px; font-weight: 800; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; }
+        
+        .helper-btn.red { color: #ef4444; border-color: rgba(239,68,68,0.2); }
+        .helper-btn.blue { color: #38bdf8; border-color: rgba(56,189,248,0.2); }
     </style>
 </head>
 <body>
@@ -302,16 +319,23 @@
 
         <!-- ETAPA 2: DICAS -->
         <div id="step2" class="screen">
-            <div class="flex justify-between items-center mb-6 pt-2">
-                <div class="flex gap-3">
-                    <button onclick="changeWordProcess()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-red-500/10 text-red-500 border border-red-500/20">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L22 22"/></svg>
+            <div class="flex justify-between items-center mb-4 pt-2">
+                <div class="flex gap-2">
+                    <!-- Botão Trocar Palavra -->
+                    <button onclick="changeWordProcess()" class="helper-btn red">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L22 22"/></svg>
+                        <span>Trocar</span>
                     </button>
-                    <button onclick="peekWord()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-500/10 text-slate-400 border border-white/10">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <!-- Botão Ver Palavra -->
+                    <button onclick="peekWord()" class="helper-btn blue">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>Ver</span>
                     </button>
                 </div>
-                <h2 class="text-slate-500 font-extrabold uppercase tracking-widest text-[10px]">Crie suas Dicas</h2>
+                <div class="text-right">
+                    <h2 class="text-slate-500 font-extrabold uppercase tracking-widest text-[9px]">Etapa de Dicas</h2>
+                    <p class="text-[8px] text-slate-600 font-bold uppercase">Toque na caixa para escrever</p>
+                </div>
             </div>
             
             <div class="grid-container">
@@ -340,7 +364,6 @@
     </div>
 
     <script>
-        // Lista padrão de segurança caso o arquivo TXT falhe
         let commonWords = ["FOCO", "FORÇA", "FÉ", "VIDA", "PAZ", "BRASIL", "UNIÃO", "SONHO", "IDEIA"];
         let state = {
             selectedWord: "",
@@ -349,11 +372,9 @@
         };
         let wakeLock = null;
 
-        // Tenta carregar as palavras do arquivo TXT
         async function loadWords() {
             const label = document.getElementById('wordCountLabel');
             try {
-                // Tenta carregar com 'Palavras.txt' (conforme seu arquivo) ou 'palavras.txt'
                 let response = await fetch('Palavras.txt');
                 if (!response.ok) response = await fetch('palavras.txt');
 
@@ -373,7 +394,6 @@
                     label.textContent = `Party Edition v2.0`;
                 }
             } catch (e) {
-                console.warn("Não foi possível carregar o arquivo TXT (provavelmente CORS local). Usando lista padrão.");
                 label.textContent = `Party Edition v2.0`;
             }
         }
@@ -382,7 +402,6 @@
             state.theme = color;
             document.documentElement.style.setProperty('--accent-color', color);
             document.documentElement.style.setProperty('--accent-glow', color + '66');
-            
             document.querySelectorAll('.theme-dot').forEach(dot => {
                 dot.classList.remove('active');
                 const dotBg = dot.style.backgroundColor;
@@ -451,11 +470,7 @@
         }
 
         async function requestWakeLock() {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                }
-            } catch (err) {}
+            try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
         }
 
         function showScreen(id) {
@@ -496,7 +511,7 @@
                 <div class="w-full text-center px-4 flex flex-col items-center">
                     <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Sua palavra é:</p>
                     <div id="mainWordBox" class="big-word mb-12 pulse">${state.selectedWord}</div>
-                    <button onclick="showScreen('step2'); renderStep2();" class="btn-action btn-primary w-full py-5 text-sm">Definir Dicas →</button>
+                    <button onclick="showScreen('step2'); renderStep2();" class="btn-action btn-primary w-full py-5 text-sm">Criar Dicas →</button>
                 </div>
             `;
             const box = document.getElementById('mainWordBox');
@@ -508,47 +523,27 @@
             zone.innerHTML = '';
             
             if (state.tips.length === 0) {
-                zone.innerHTML = `<div class="col-span-2 py-20 text-slate-700 font-bold text-center w-full opacity-50 text-xs uppercase tracking-widest">Nenhuma dica<br>ainda</div>`;
+                zone.innerHTML = `<div class="col-span-2 py-16 text-slate-700 font-bold text-center w-full opacity-50 text-[10px] uppercase tracking-widest leading-relaxed">Adicione dicas para ajudar<br>a pessoa a adivinhar</div>`;
             }
 
             state.tips.forEach((tip, index) => {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'word-wrapper';
-                
                 const input = document.createElement('div');
                 input.className = 'tip-box';
                 input.contentEditable = true;
                 input.textContent = tip;
                 input.spellcheck = false;
                 input.setAttribute('data-index', index);
-
-                input.onkeydown = (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        input.blur();
-                        addNewTip();
-                    }
-                };
-
+                input.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); addNewTip(); } };
                 input.onblur = () => {
                     state.tips[index] = input.textContent.trim().toUpperCase();
-                    if (!state.tips[index]) {
-                        state.tips.splice(index, 1);
-                        renderStep2();
-                    } else {
-                        adjustTipFont(input);
-                    }
+                    if (!state.tips[index]) { state.tips.splice(index, 1); renderStep2(); } else { adjustTipFont(input); }
                 };
-
                 const delBtn = document.createElement('button');
                 delBtn.className = 'delete-btn';
                 delBtn.innerHTML = '✕';
-                delBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    state.tips.splice(index, 1);
-                    renderStep2();
-                };
-
+                delBtn.onclick = (e) => { e.stopPropagation(); state.tips.splice(index, 1); renderStep2(); };
                 wrapper.appendChild(input);
                 wrapper.appendChild(delBtn);
                 zone.appendChild(wrapper);
@@ -559,7 +554,6 @@
         function addNewTip() {
             state.tips.push("DICA");
             renderStep2();
-            
             setTimeout(() => {
                 const inputs = document.querySelectorAll('.tip-box');
                 const last = inputs[inputs.length - 1];
@@ -586,8 +580,23 @@
             const content = document.getElementById('peekContent');
             overlay.style.display = 'flex';
             
+            content.innerHTML = `
+                <div class="text-center space-y-6">
+                    <p class="text-white font-bold uppercase tracking-widest text-sm">Trocar Palavra?</p>
+                    <p class="text-slate-500 text-xs px-10">Isso apagará suas dicas atuais e sorteará uma nova palavra.</p>
+                    <div class="flex flex-col gap-3 w-full px-10">
+                        <button onclick="confirmChangeWord()" class="btn-action bg-red-500 text-white py-4 text-xs">Sim, Trocar</button>
+                        <button onclick="document.getElementById('peekOverlay').style.display='none'" class="btn-action btn-ghost py-4 text-xs">Cancelar</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function confirmChangeWord() {
+            state.tips = [];
+            const content = document.getElementById('peekContent');
             let count = 3;
-            content.innerHTML = `<div class="countdown pulse">${count}</div><p class="mt-8 text-red-500 font-black uppercase tracking-widest text-[10px]">Trocando palavra...</p>`;
+            content.innerHTML = `<div class="countdown pulse">${count}</div><p class="mt-8 text-red-500 font-black uppercase tracking-widest text-[10px]">Sorteando Nova Palavra...</p>`;
 
             const timer = setInterval(() => {
                 count--;
@@ -597,24 +606,23 @@
                 } else {
                     clearInterval(timer);
                     state.selectedWord = commonWords[Math.floor(Math.random() * commonWords.length)];
-                    
                     let showCount = 4;
                     content.innerHTML = `
                         <p class="text-white/40 text-[10px] font-black mb-4 uppercase tracking-[0.4em]">Nova Palavra:</p>
                         <div id="newWordBox" class="big-word pulse">${state.selectedWord}</div>
-                        <div class="small-timer">Retornando em ${showCount}s</div>
+                        <div class="small-timer">Voltando em ${showCount}s</div>
                     `;
                     const box = document.getElementById('newWordBox');
                     setTimeout(() => adjustMainWordFont(box, state.selectedWord, 160), 50);
-
                     const viewTimer = setInterval(() => {
                         showCount--;
                         if (showCount > 0) {
                             const timerText = content.querySelector('.small-timer');
-                            if(timerText) timerText.textContent = `Retornando em ${showCount}s`;
+                            if(timerText) timerText.textContent = `Voltando em ${showCount}s`;
                         } else {
                             clearInterval(viewTimer);
-                            overlay.style.display = 'none';
+                            document.getElementById('peekOverlay').style.display = 'none';
+                            renderStep2();
                         }
                     }, 1000);
                 }
@@ -626,38 +634,26 @@
             const content = document.getElementById('peekContent');
             overlay.style.display = 'flex';
             
-            let count = 2;
-            content.innerHTML = `<div class="countdown pulse">${count}</div>`;
+            let showCount = 4;
+            content.innerHTML = `
+                <p class="text-white/40 text-[10px] font-black mb-4 uppercase tracking-[0.4em]">Lembrando palavra:</p>
+                <div id="peekWordBox" class="big-word pulse">${state.selectedWord}</div>
+                <div class="small-timer">Sumindo em ${showCount}s</div>
+            `;
+            
+            const box = document.getElementById('peekWordBox');
+            setTimeout(() => adjustMainWordFont(box, state.selectedWord, 160), 50);
 
-            const prepTimer = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    const cd = content.querySelector('.countdown');
-                    if(cd) cd.textContent = count;
+            const outTimer = setInterval(() => {
+                showCount--;
+                if (showCount > 0) {
+                    const timerText = content.querySelector('.small-timer');
+                    if(timerText) timerText.textContent = `Sumindo em ${showCount}s`;
                 } else {
-                    clearInterval(prepTimer);
-                    
-                    let showCount = 4;
-                    content.innerHTML = `
-                        <div id="peekWordBox" class="big-word pulse">${state.selectedWord}</div>
-                        <div class="small-timer">Lembrando... (${showCount}s)</div>
-                    `;
-                    
-                    const box = document.getElementById('peekWordBox');
-                    setTimeout(() => adjustMainWordFont(box, state.selectedWord, 160), 50);
-
-                    const outTimer = setInterval(() => {
-                        showCount--;
-                        if (showCount > 0) {
-                            const timerText = content.querySelector('.small-timer');
-                            if(timerText) timerText.textContent = `Lembrando... (${showCount}s)`;
-                        } else {
-                            clearInterval(outTimer);
-                            overlay.style.display = 'none';
-                        }
-                    }, 1000);
+                    clearInterval(outTimer);
+                    overlay.style.display = 'none';
                 }
-            }, 800);
+            }, 1000);
         }
 
         function goToStep3() {
@@ -667,7 +663,7 @@
             let count = 3;
             container.innerHTML = `<div class="flex-1 flex flex-col items-center justify-center">
                 <div class="countdown pulse">${count}</div>
-                <p class="mt-8 text-slate-500 font-black uppercase tracking-[0.3em] text-[10px]">Passe o celular!</p>
+                <p class="mt-8 text-slate-500 font-black uppercase tracking-[0.3em] text-[10px]">Passe o celular para o parceiro!</p>
             </div>`;
 
             const timer = setInterval(() => {
@@ -686,19 +682,17 @@
             const container = document.getElementById('s3Content');
             container.innerHTML = `
                 <div class="flex flex-col items-center px-6">
-                    <p class="text-white/40 text-[10px] font-black mb-2 uppercase tracking-[0.4em]">Revelado:</p>
+                    <p class="text-white/40 text-[10px] font-black mb-2 uppercase tracking-[0.4em]">Palavra Secreta:</p>
                     <div id="finalWord" class="big-word mb-12">${state.selectedWord}</div>
                     
                     <div class="w-full">
-                         <p class="text-slate-600 text-[10px] font-black mb-6 uppercase tracking-[0.2em] text-center">Dicas Fornecidas</p>
+                         <p class="text-slate-600 text-[10px] font-black mb-6 uppercase tracking-[0.2em] text-center">Dicas do seu parceiro</p>
                          <div id="finalGrid" class="grid-zone"></div>
                     </div>
                 </div>
             `;
-
             const finalWord = document.getElementById('finalWord');
             setTimeout(() => adjustMainWordFont(finalWord, state.selectedWord, 80), 50);
-
             const grid = document.getElementById('finalGrid');
             state.tips.forEach(tip => {
                 if(tip && tip !== "DICA") {
@@ -728,7 +722,6 @@
             `;
         }
 
-        // Inicia o carregamento assim que a página abre
         window.onload = loadWords;
     </script>
 </body>
