@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Palavras em Foco - 3 Etapas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        body, html {
+            height: 100%;
+            height: 100svh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; 
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 1rem;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* --- COMUM --- */
+        .btn-action {
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            user-select: none;
+        }
+        .btn-action:active { transform: scale(0.95); }
+        .btn-primary { background: #38bdf8; color: #0f172a; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-ghost { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+
+        /* --- ETAPA 1: SORTEIO --- */
+        .step-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .big-word {
+            color: #38bdf8;
+            text-shadow: 0 0 40px rgba(56, 189, 248, 0.5);
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+            width: 100%;
+            max-width: 100%;
+            white-space: nowrap; 
+            line-height: 1.1;
+            display: block;
+            overflow: hidden;
+        }
+
+        /* --- ETAPA 2 & 3: DICAS --- */
+        .grid-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 120px;
+        }
+
+        .grid-zone {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.85rem;
+            justify-content: center;
+        }
+
+        .word-wrapper {
+            position: relative;
+            flex: 1 0 42%;
+            min-height: 65px;
+            display: flex;
+            max-width: 46%; 
+        }
+
+        .tip-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            text-transform: uppercase;
+            font-weight: 900;
+            border-radius: 0.75rem;
+            width: 100%;
+            padding: 0.75rem;
+            text-align: center;
+            outline: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-btn {
+            position: absolute;
+            right: 4px;
+            top: 4px;
+            width: 20px;
+            height: 20px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 10;
+            opacity: 0.8;
+        }
+
+        /* --- BARRA DE NAVEGAÇÃO --- */
+        .nav-bar {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.75rem;
+            z-index: 100;
+            width: 90%;
+            justify-content: center;
+        }
+
+        /* --- ETAPA 3: FINAL --- */
+        .final-header {
+            flex: 0 0 25vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 2px dashed rgba(56, 189, 248, 0.3);
+            padding: 1.5rem;
+            width: 100%;
+        }
+
+        /* Overlay para o "Espiar" e "Trocar" */
+        #peekOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        /* ANIMAÇÕES */
+        .pulse { animation: pulseAnim 1s infinite; }
+        @keyframes pulseAnim {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        .countdown {
+            font-size: 6rem;
+            font-weight: 900;
+            color: #ef4444;
+        }
+
+        .small-timer {
+            position: absolute;
+            bottom: 40px;
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- ETAPA 1: SORTEIO -->
+        <div id="step1" class="screen active">
+            <div class="step-container">
+                <h2 class="text-slate-500 font-bold uppercase tracking-widest text-sm mb-4">Etapa 1: Palavra Chave</h2>
+                <div id="s1Content" class="flex flex-col items-center justify-center gap-8 w-full p-4 min-h-[40vh] overflow-hidden">
+                    <button onclick="runS1Lottery()" class="btn-action btn-danger px-12 py-8 text-2xl shadow-xl shadow-red-900/20">SORTEAR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ETAPA 2: DICAS -->
+        <div id="step2" class="screen">
+            <div class="flex justify-between items-center mb-4 px-2">
+                <div class="flex gap-2">
+                    <button onclick="changeWordProcess()" class="btn-action btn-ghost text-[10px] py-2 px-3 border-red-500/50 text-red-400">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L22 22"/></svg>
+                        TROCAR
+                    </button>
+                    <button onclick="peekWord()" class="btn-action btn-ghost text-[10px] py-2 px-3">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        VER
+                    </button>
+                </div>
+                <h2 class="text-slate-500 font-bold uppercase tracking-widest text-xs">Etapa 2: Dicas</h2>
+            </div>
+            <div class="grid-container">
+                <div id="gridZone" class="grid-zone"></div>
+            </div>
+            <div class="nav-bar">
+                <button onclick="addNewTip()" class="btn-action btn-primary flex-1">Dica (+)</button>
+                <button onclick="goToStep3()" class="btn-action btn-success flex-1">Finalizar</button>
+            </div>
+        </div>
+
+        <!-- ETAPA 3: RESULTADO -->
+        <div id="step3" class="screen">
+            <div id="s3Content" class="flex flex-col h-full w-full"></div>
+            <div class="nav-bar">
+                <button onclick="resetApp()" class="btn-action btn-danger w-full">Reiniciar Tudo</button>
+            </div>
+        </div>
+
+        <!-- OVERLAY DE ESPIADA / TROCA -->
+        <div id="peekOverlay">
+            <div id="peekContent" class="flex flex-col items-center justify-center w-full h-full"></div>
+        </div>
+
+    </div>
+
+    <script>
+        let commonWords = ["FOCO", "FORÇA", "FÉ", "VIDA", "PAZ", "BRASIL", "UNIÃO", "SONHO", "IDEIA"];
+        let state = {
+            selectedWord: "",
+            tips: []
+        };
+        let wakeLock = null;
+
+        async function loadWords() {
+            try {
+                const response = await fetch('palavras.txt');
+                if (response.ok) {
+                    const text = await response.text();
+                    const lines = text.split(/\r?\n/).map(l => l.trim().toUpperCase()).filter(l => l.length > 0);
+                    if (lines.length > 0) commonWords = lines;
+                }
+            } catch (e) {}
+        }
+
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {}
+        }
+
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function adjustMainWordFont(el, word, customMax = 120) {
+            if (!el) return;
+            // Largura disponível com margem de segurança maior para evitar quebra/transbordo
+            const containerWidth = el.parentElement.offsetWidth * 0.85; 
+            const containerHeight = el.parentElement.offsetHeight * 0.6;
+            
+            // Cálculo baseado na quantidade de caracteres para evitar estourar largura
+            let fontSize = containerWidth / (word.length * 0.65);
+            
+            // Aplica limites
+            fontSize = Math.min(fontSize, containerHeight, customMax);
+            el.style.fontSize = fontSize + 'px';
+        }
+
+        // --- ETAPA 1 ---
+        function runS1Lottery() {
+            requestWakeLock(); 
+            const container = document.getElementById('s1Content');
+            let count = 3;
+            container.innerHTML = `<div class="countdown pulse">${count}</div>`;
+
+            const timer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    const cd = container.querySelector('.countdown');
+                    if(cd) cd.textContent = count;
+                } else {
+                    clearInterval(timer);
+                    state.selectedWord = commonWords[Math.floor(Math.random() * commonWords.length)];
+                    displayS1Result();
+                }
+            }, 1000);
+        }
+
+        function displayS1Result() {
+            const container = document.getElementById('s1Content');
+            container.innerHTML = `
+                <div id="mainWordBox" class="big-word mb-8">${state.selectedWord}</div>
+                <button onclick="showScreen('step2'); renderStep2();" class="btn-action btn-success px-12">Prosseguir →</button>
+            `;
+            const box = document.getElementById('mainWordBox');
+            setTimeout(() => adjustMainWordFont(box, state.selectedWord), 50);
+        }
+
+        // --- ETAPA 2 ---
+        function renderStep2() {
+            const zone = document.getElementById('gridZone');
+            zone.innerHTML = '';
+            
+            if (state.tips.length === 0) {
+                zone.innerHTML = `<div class="p-12 text-slate-700 font-bold text-center w-full opacity-50">Toque em "Dica (+)" para começar</div>`;
+            }
+
+            state.tips.forEach((tip, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'word-wrapper';
+                
+                const input = document.createElement('div');
+                input.className = 'tip-box';
+                input.contentEditable = true;
+                input.textContent = tip;
+                input.spellcheck = false;
+                input.setAttribute('data-index', index);
+
+                input.onkeydown = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        input.blur();
+                        addNewTip();
+                    }
+                };
+
+                input.onblur = () => {
+                    state.tips[index] = input.textContent.trim().toUpperCase();
+                    if (!state.tips[index]) {
+                        state.tips.splice(index, 1);
+                        renderStep2();
+                    } else {
+                        adjustTipFont(input);
+                    }
+                };
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'delete-btn';
+                delBtn.innerHTML = '✕';
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    state.tips.splice(index, 1);
+                    renderStep2();
+                };
+
+                wrapper.appendChild(input);
+                wrapper.appendChild(delBtn);
+                zone.appendChild(wrapper);
+                adjustTipFont(input);
+            });
+        }
+
+        function addNewTip() {
+            state.tips.push("DICA");
+            renderStep2();
+            
+            setTimeout(() => {
+                const inputs = document.querySelectorAll('.tip-box');
+                const last = inputs[inputs.length - 1];
+                if (last) {
+                    last.focus();
+                    const range = document.createRange();
+                    range.selectNodeContents(last);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }, 50);
+        }
+
+        function adjustTipFont(el) {
+            const text = el.textContent || "";
+            const width = el.offsetWidth - 15; 
+            let fontSize = width / (text.length * 0.7);
+            el.style.fontSize = Math.min(Math.max(fontSize, 16), 28) + 'px';
+        }
+
+        // FUNÇÃO TROCAR PALAVRA (Ajustada para esperar 5 segundos)
+        function changeWordProcess() {
+            const overlay = document.getElementById('peekOverlay');
+            const content = document.getElementById('peekContent');
+            overlay.style.display = 'flex';
+            
+            let count = 3;
+            content.innerHTML = `<div class="countdown pulse">${count}</div><p class="mt-8 text-red-500 font-bold uppercase tracking-widest text-center px-4">SORTEANDO NOVA PALAVRA...</p>`;
+
+            const timer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    const cd = content.querySelector('.countdown');
+                    if(cd) cd.textContent = count;
+                } else {
+                    clearInterval(timer);
+                    state.selectedWord = commonWords[Math.floor(Math.random() * commonWords.length)];
+                    
+                    let showCount = 5;
+                    content.innerHTML = `
+                        <div id="newWordBox" class="big-word pulse">${state.selectedWord}</div>
+                        <div class="small-timer">NOVA PALAVRA CHAVE! (${showCount}s)</div>
+                    `;
+                    const box = document.getElementById('newWordBox');
+                    setTimeout(() => adjustMainWordFont(box, state.selectedWord, 180), 50);
+
+                    // Contador de 5 segundos para visualização
+                    const viewTimer = setInterval(() => {
+                        showCount--;
+                        if (showCount > 0) {
+                            const timerText = content.querySelector('.small-timer');
+                            if(timerText) timerText.textContent = `NOVA PALAVRA CHAVE! (${showCount}s)`;
+                        } else {
+                            clearInterval(viewTimer);
+                            overlay.style.display = 'none';
+                        }
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+        // FUNÇÃO ESPIAR (PEEK)
+        function peekWord() {
+            const overlay = document.getElementById('peekOverlay');
+            const content = document.getElementById('peekContent');
+            overlay.style.display = 'flex';
+            
+            let count = 3;
+            content.innerHTML = `<div class="countdown pulse">${count}</div><p class="mt-8 text-slate-500 font-bold uppercase tracking-widest">Preparar...</p>`;
+
+            const prepTimer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    const cd = content.querySelector('.countdown');
+                    if(cd) cd.textContent = count;
+                } else {
+                    clearInterval(prepTimer);
+                    
+                    let showCount = 5;
+                    content.innerHTML = `
+                        <div id="peekWordBox" class="big-word pulse">${state.selectedWord}</div>
+                        <div class="small-timer">VOLTANDO EM ${showCount}s</div>
+                    `;
+                    
+                    const box = document.getElementById('peekWordBox');
+                    setTimeout(() => adjustMainWordFont(box, state.selectedWord, 180), 50);
+
+                    const outTimer = setInterval(() => {
+                        showCount--;
+                        if (showCount > 0) {
+                            const timerText = content.querySelector('.small-timer');
+                            if(timerText) timerText.textContent = `VOLTANDO EM ${showCount}s`;
+                        } else {
+                            clearInterval(outTimer);
+                            overlay.style.display = 'none';
+                        }
+                    }, 1000);
+                }
+            }, 1000);
+        }
+
+        // --- ETAPA 3 ---
+        function goToStep3() {
+            showScreen('step3');
+            const container = document.getElementById('s3Content');
+            let count = 3;
+            container.innerHTML = `<div class="flex-1 flex items-center justify-center"><div class="countdown pulse">${count}</div></div>`;
+
+            const timer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    const cd = container.querySelector('.countdown');
+                    if(cd) cd.textContent = count;
+                } else {
+                    clearInterval(timer);
+                    renderFinalResult();
+                }
+            }, 1000);
+        }
+
+        function renderFinalResult() {
+            const container = document.getElementById('s3Content');
+            container.innerHTML = `
+                <div class="final-header">
+                    <div id="finalWord" class="big-word">${state.selectedWord}</div>
+                </div>
+                <div class="grid-container mt-4">
+                    <div id="finalGrid" class="grid-zone"></div>
+                </div>
+            `;
+
+            const finalWord = document.getElementById('finalWord');
+            setTimeout(() => adjustMainWordFont(finalWord, state.selectedWord, 80), 50);
+
+            const grid = document.getElementById('finalGrid');
+            state.tips.forEach(tip => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'word-wrapper m-1';
+                
+                const item = document.createElement('div');
+                item.className = 'tip-box';
+                item.textContent = tip;
+                
+                wrapper.appendChild(item);
+                grid.appendChild(wrapper);
+                
+                setTimeout(() => adjustTipFont(item), 50);
+            });
+        }
+
+        function resetApp() {
+            state.selectedWord = "";
+            state.tips = [];
+            const s1Content = document.getElementById('s1Content');
+            if(s1Content) s1Content.innerHTML = `<button onclick="runS1Lottery()" class="btn-action btn-danger px-12 py-8 text-2xl shadow-xl shadow-red-900/20">SORTEAR</button>`;
+            showScreen('step1');
+        }
+
+        window.onload = loadWords;
+    </script>
+</body>
+</html>
