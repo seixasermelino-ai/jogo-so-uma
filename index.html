@@ -10,7 +10,8 @@
         
         :root {
             --accent-color: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.5);
+            --accent-glow: rgba(56, 189, 248, 0.4);
+            --bg-dark: #0f172a;
         }
 
         body, html {
@@ -20,10 +21,10 @@
             padding: 0;
             overflow: hidden; 
             font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
+            background-color: var(--bg-dark);
             color: #f8fafc;
             -webkit-tap-highlight-color: transparent;
-            transition: background-color 0.5s ease;
+            transition: all 0.4s ease;
         }
 
         .app-container {
@@ -42,24 +43,45 @@
             position: absolute;
             top: 0;
             left: 0;
-            padding: 1rem;
+            padding: 1.25rem;
         }
 
         .screen.active {
             display: flex;
         }
 
+        /* --- HEADER --- */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0.5rem 0;
+            margin-bottom: 2rem;
+        }
+
         /* --- TEMAS --- */
+        .color-palette {
+            display: flex;
+            gap: 0.75rem;
+            background: rgba(255,255,255,0.05);
+            padding: 0.5rem 0.75rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
         .theme-dot {
-            width: 32px;
-            height: 32px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.2);
-            transition: transform 0.2s;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
         }
         .theme-dot.active {
+            transform: scale(1.3);
             border-color: white;
-            transform: scale(1.2);
+            box-shadow: 0 0 10px var(--accent-glow);
         }
 
         /* --- BOTÕES --- */
@@ -77,14 +99,14 @@
             user-select: none;
         }
         .btn-action:active { transform: scale(0.95); }
-        .btn-primary { background: var(--accent-color); color: #0f172a; }
+        .btn-primary { background: var(--accent-color); color: #0f172a; box-shadow: 0 4px 15px var(--accent-glow); }
         .btn-danger { background: #ef4444; color: white; }
         .btn-success { background: #10b981; color: white; }
-        .btn-ghost { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-ghost { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); }
 
         .big-word {
             color: var(--accent-color);
-            text-shadow: 0 0 40px var(--accent-glow);
+            text-shadow: 0 0 30px var(--accent-glow);
             font-weight: 900;
             text-transform: uppercase;
             text-align: center;
@@ -94,6 +116,7 @@
             line-height: 1.1;
             display: block;
             overflow: hidden;
+            transition: color 0.4s ease;
         }
 
         /* --- DICAS --- */
@@ -119,7 +142,7 @@
         }
 
         .tip-box {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
             border: 2px solid rgba(255, 255, 255, 0.1);
             color: white;
             text-transform: uppercase;
@@ -129,20 +152,22 @@
             padding: 0.75rem;
             text-align: center;
             outline: none;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: border-color 0.3s;
+        }
+        .tip-box:focus {
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.07);
         }
 
         .delete-btn {
             position: absolute;
-            right: 4px;
-            top: 4px;
-            width: 20px;
-            height: 20px;
+            right: -5px;
+            top: -5px;
+            width: 22px;
+            height: 22px;
             background: #ef4444;
             color: white;
             border-radius: 50%;
@@ -152,7 +177,7 @@
             font-size: 10px;
             font-weight: bold;
             z-index: 10;
-            opacity: 0.8;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
         .nav-bar {
@@ -172,7 +197,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 2px dashed var(--accent-glow);
+            border-bottom: 2px dashed rgba(255,255,255,0.1);
             padding: 1.5rem;
             width: 100%;
         }
@@ -180,7 +205,7 @@
         #peekOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #0f172a;
+            background: var(--bg-dark);
             z-index: 500;
             display: none;
             flex-direction: column;
@@ -191,17 +216,18 @@
 
         /* HISTÓRICO CARD */
         .history-card {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.03);
             border-radius: 1rem;
             padding: 1rem;
             margin-bottom: 0.75rem;
             border-left: 4px solid var(--accent-color);
+            transition: border-color 0.4s;
         }
 
-        .pulse { animation: pulseAnim 1s infinite; }
+        .pulse { animation: pulseAnim 1.5s infinite ease-in-out; }
         @keyframes pulseAnim {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
         }
 
         .countdown {
@@ -213,10 +239,11 @@
         .small-timer {
             position: absolute;
             bottom: 40px;
-            font-size: 1.25rem;
+            font-size: 0.8rem;
             font-weight: 900;
-            color: rgba(255, 255, 255, 0.3);
-            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 3px;
+            text-transform: uppercase;
         }
     </style>
 </head>
@@ -226,11 +253,13 @@
         
         <!-- ETAPA 1: SORTEIO -->
         <div id="step1" class="screen active">
-            <div class="flex justify-between items-start w-full px-2 mt-4">
-                <button onclick="showHistory()" class="btn-ghost p-3 rounded-full">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <!-- Top Bar Organizada -->
+            <div class="top-bar">
+                <button onclick="showHistory()" class="btn-ghost w-12 h-12 rounded-full flex items-center justify-center">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </button>
-                <div class="flex gap-3">
+                
+                <div class="color-palette">
                     <div onclick="setTheme('#38bdf8')" class="theme-dot active" style="background: #38bdf8;"></div>
                     <div onclick="setTheme('#a855f7')" class="theme-dot" style="background: #a855f7;"></div>
                     <div onclick="setTheme('#ec4899')" class="theme-dot" style="background: #ec4899;"></div>
@@ -238,36 +267,40 @@
                 </div>
             </div>
 
-            <div class="step-container">
-                <h2 class="text-slate-500 font-bold uppercase tracking-widest text-sm mb-4">Sorteie sua Palavra</h2>
-                <div id="s1Content" class="flex flex-col items-center justify-center gap-8 w-full p-4 min-h-[40vh] overflow-hidden">
-                    <button onclick="runS1Lottery()" class="btn-action btn-danger px-12 py-8 text-2xl shadow-xl shadow-red-900/20">SORTEAR</button>
+            <div class="step-container flex-1 flex flex-col items-center justify-center">
+                <h2 class="text-slate-500 font-bold uppercase tracking-[0.2em] text-[10px] mb-2">Preparado?</h2>
+                <div id="s1Content" class="flex flex-col items-center justify-center gap-10 w-full p-4 min-h-[30vh]">
+                    <div class="text-center">
+                        <p class="text-slate-400 text-sm mb-6">Toque para sortear sua palavra secreta</p>
+                        <button onclick="runS1Lottery()" class="btn-action btn-danger px-14 py-8 text-2xl shadow-2xl shadow-red-500/20">SORTEAR</button>
+                    </div>
                 </div>
             </div>
-            <p class="text-center text-[10px] text-slate-600 mb-8 uppercase font-bold tracking-tighter">Escolha uma cor para identificar seu celular</p>
+            
+            <div class="mt-auto pb-6 text-center">
+                <p class="text-[9px] text-slate-600 uppercase font-black tracking-widest opacity-60">Identifique seu aparelho pela cor acima</p>
+            </div>
         </div>
 
         <!-- ETAPA 2: DICAS -->
         <div id="step2" class="screen">
-            <div class="flex justify-between items-center mb-4 px-2">
+            <div class="flex justify-between items-center mb-6">
                 <div class="flex gap-2">
-                    <button onclick="changeWordProcess()" class="btn-action btn-ghost text-[10px] py-2 px-3 border-red-500/50 text-red-400">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L22 22"/></svg>
-                        TROCAR
+                    <button onclick="changeWordProcess()" class="btn-ghost p-2 rounded-lg text-red-400 border-red-500/20">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L22 22"/></svg>
                     </button>
-                    <button onclick="peekWord()" class="btn-action btn-ghost text-[10px] py-2 px-3">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        VER
+                    <button onclick="peekWord()" class="btn-ghost p-2 rounded-lg">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     </button>
                 </div>
-                <h2 class="text-slate-500 font-bold uppercase tracking-widest text-xs">Etapa 2: Dicas</h2>
+                <h2 class="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Crie suas Dicas</h2>
             </div>
             <div class="grid-container">
                 <div id="gridZone" class="grid-zone"></div>
             </div>
             <div class="nav-bar">
-                <button onclick="addNewTip()" class="btn-action btn-primary flex-1">Dica (+)</button>
-                <button onclick="goToStep3()" class="btn-action btn-success flex-1">Finalizar</button>
+                <button onclick="addNewTip()" class="btn-action btn-ghost flex-1">Dica (+)</button>
+                <button onclick="goToStep3()" class="btn-action btn-primary flex-1">Pronto</button>
             </div>
         </div>
 
@@ -275,7 +308,7 @@
         <div id="step3" class="screen">
             <div id="s3Content" class="flex flex-col h-full w-full"></div>
             <div class="nav-bar">
-                <button onclick="resetApp()" class="btn-action btn-danger w-full">Reiniciar Tudo</button>
+                <button onclick="resetApp()" class="btn-action btn-danger w-full">Novo Jogo</button>
             </div>
         </div>
 
@@ -306,18 +339,30 @@
             } catch (e) {}
         }
 
-        // --- SISTEMA DE TEMA ---
+        // --- SISTEMA DE TEMA DINÂMICO ---
         function setTheme(color) {
             state.theme = color;
             document.documentElement.style.setProperty('--accent-color', color);
-            document.documentElement.style.setProperty('--accent-glow', color + '80');
+            document.documentElement.style.setProperty('--accent-glow', color + '66');
             
             document.querySelectorAll('.theme-dot').forEach(dot => {
                 dot.classList.remove('active');
-                if(dot.style.background.includes(color) || dot.getAttribute('onclick').includes(color)) {
+                // Compara a cor de fundo (conversão necessária pois o browser pode retornar em rgb)
+                const dotBg = dot.style.backgroundColor;
+                if(dotBg && (dotBg === color || rgbToHex(dotBg) === color)) {
                     dot.classList.add('active');
                 }
             });
+        }
+
+        function rgbToHex(rgb) {
+            if (rgb.startsWith('#')) return rgb;
+            const match = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            if (!match) return rgb;
+            const r = parseInt(match[1]);
+            const g = parseInt(match[2]);
+            const b = parseInt(match[3]);
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
         }
 
         // --- HISTÓRICO ---
@@ -325,12 +370,14 @@
             const history = JSON.parse(localStorage.getItem('game_history') || '[]');
             const entry = {
                 word: state.selectedWord,
-                tips: state.tips.filter(t => t.length > 0),
+                tips: state.tips.filter(t => t.length > 0 && t !== "DICA"),
                 date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 theme: state.theme
             };
-            history.unshift(entry);
-            localStorage.setItem('game_history', JSON.stringify(history.slice(0, 10))); // Salva os últimos 10
+            if (entry.word) {
+                history.unshift(entry);
+                localStorage.setItem('game_history', JSON.stringify(history.slice(0, 15)));
+            }
         }
 
         function showHistory() {
@@ -340,23 +387,31 @@
             
             overlay.style.display = 'flex';
             content.innerHTML = `
-                <h3 class="text-sky-400 font-black mb-6 uppercase tracking-widest">Últimas Partidas</h3>
-                <div class="w-full max-h-[70vh] overflow-y-auto px-2">
-                    ${history.length === 0 ? '<p class="text-center text-slate-500 italic">Nenhum registro ainda...</p>' : ''}
+                <div class="w-full flex justify-between items-center mb-6 px-2">
+                     <h3 class="text-white font-black uppercase tracking-widest text-lg">Histórico</h3>
+                     <button onclick="clearHistory()" class="text-[10px] text-red-400 font-bold uppercase">Limpar</button>
+                </div>
+                <div class="w-full max-h-[65vh] overflow-y-auto px-2 space-y-3">
+                    ${history.length === 0 ? '<p class="text-center text-slate-500 py-10 italic">Nenhuma rodada salva ainda.</p>' : ''}
                     ${history.map(item => `
                         <div class="history-card" style="border-left-color: ${item.theme}">
                             <div class="flex justify-between items-center mb-2">
-                                <span class="font-black text-white">${item.word}</span>
-                                <span class="text-[10px] text-slate-500">${item.date}</span>
+                                <span class="font-black text-white text-base">${item.word}</span>
+                                <span class="text-[10px] text-slate-500 font-bold">${item.date}</span>
                             </div>
-                            <div class="flex flex-wrap gap-1">
-                                ${item.tips.map(t => `<span class="text-[9px] bg-white/10 px-2 py-1 rounded text-slate-300 uppercase font-bold">${t}</span>`).join('')}
+                            <div class="flex flex-wrap gap-1.5">
+                                ${item.tips.map(t => `<span class="text-[9px] bg-white/5 px-2 py-1 rounded text-slate-400 uppercase font-bold border border-white/5">${t}</span>`).join('')}
                             </div>
                         </div>
                     `).join('')}
                 </div>
-                <button onclick="document.getElementById('peekOverlay').style.display='none'" class="btn-action btn-danger mt-8 w-full">FECHAR</button>
+                <button onclick="document.getElementById('peekOverlay').style.display='none'" class="btn-action btn-ghost mt-8 w-full py-4">Voltar</button>
             `;
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('game_history');
+            showHistory();
         }
 
         async function requestWakeLock() {
@@ -381,7 +436,7 @@
             el.style.fontSize = fontSize + 'px';
         }
 
-        // --- ETAPA 1 ---
+        // --- ETAPA 1: LÓGICA ---
         function runS1Lottery() {
             requestWakeLock(); 
             const container = document.getElementById('s1Content');
@@ -404,20 +459,22 @@
         function displayS1Result() {
             const container = document.getElementById('s1Content');
             container.innerHTML = `
-                <div id="mainWordBox" class="big-word mb-8">${state.selectedWord}</div>
-                <button onclick="showScreen('step2'); renderStep2();" class="btn-action btn-success px-12">Prosseguir →</button>
+                <div class="w-full text-center">
+                    <div id="mainWordBox" class="big-word mb-10 pulse">${state.selectedWord}</div>
+                    <button onclick="showScreen('step2'); renderStep2();" class="btn-action btn-primary px-12 mx-auto">Começar Dicas →</button>
+                </div>
             `;
             const box = document.getElementById('mainWordBox');
             setTimeout(() => adjustMainWordFont(box, state.selectedWord), 50);
         }
 
-        // --- ETAPA 2 ---
+        // --- ETAPA 2: LÓGICA ---
         function renderStep2() {
             const zone = document.getElementById('gridZone');
             zone.innerHTML = '';
             
             if (state.tips.length === 0) {
-                zone.innerHTML = `<div class="p-12 text-slate-700 font-bold text-center w-full opacity-50">Toque em "Dica (+)" para começar</div>`;
+                zone.innerHTML = `<div class="p-16 text-slate-600 font-bold text-center w-full opacity-40 text-sm">Adicione dicas para ajudar na adivinhação</div>`;
             }
 
             state.tips.forEach((tip, index) => {
@@ -485,9 +542,9 @@
 
         function adjustTipFont(el) {
             const text = el.textContent || "";
-            const width = el.offsetWidth - 15; 
-            let fontSize = width / (text.length * 0.7);
-            el.style.fontSize = Math.min(Math.max(fontSize, 16), 28) + 'px';
+            const width = el.offsetWidth - 20; 
+            let fontSize = width / (text.length * 0.75);
+            el.style.fontSize = Math.min(Math.max(fontSize, 14), 24) + 'px';
         }
 
         function changeWordProcess() {
@@ -496,7 +553,7 @@
             overlay.style.display = 'flex';
             
             let count = 3;
-            content.innerHTML = `<div class="countdown pulse">${count}</div><p class="mt-8 text-red-500 font-bold uppercase tracking-widest text-center px-4">SORTEANDO NOVA PALAVRA...</p>`;
+            content.innerHTML = `<div class="countdown pulse">${count}</div><p class="mt-8 text-red-500 font-bold uppercase tracking-widest text-xs">Sorteando Nova...</p>`;
 
             const timer = setInterval(() => {
                 count--;
@@ -510,7 +567,7 @@
                     let showCount = 5;
                     content.innerHTML = `
                         <div id="newWordBox" class="big-word pulse">${state.selectedWord}</div>
-                        <div class="small-timer">NOVA PALAVRA CHAVE! (${showCount}s)</div>
+                        <div class="small-timer">Nova Palavra (${showCount}s)</div>
                     `;
                     const box = document.getElementById('newWordBox');
                     setTimeout(() => adjustMainWordFont(box, state.selectedWord, 180), 50);
@@ -519,7 +576,7 @@
                         showCount--;
                         if (showCount > 0) {
                             const timerText = content.querySelector('.small-timer');
-                            if(timerText) timerText.textContent = `NOVA PALAVRA CHAVE! (${showCount}s)`;
+                            if(timerText) timerText.textContent = `Nova Palavra (${showCount}s)`;
                         } else {
                             clearInterval(viewTimer);
                             overlay.style.display = 'none';
@@ -534,8 +591,8 @@
             const content = document.getElementById('peekContent');
             overlay.style.display = 'flex';
             
-            let count = 3;
-            content.innerHTML = `<div class="countdown pulse">${count}</div><p class="mt-8 text-slate-500 font-bold uppercase tracking-widest">Preparar...</p>`;
+            let count = 2;
+            content.innerHTML = `<div class="countdown pulse">${count}</div><p class="mt-8 text-slate-500 font-bold uppercase tracking-widest text-[10px]">Olhos na tela...</p>`;
 
             const prepTimer = setInterval(() => {
                 count--;
@@ -548,7 +605,7 @@
                     let showCount = 5;
                     content.innerHTML = `
                         <div id="peekWordBox" class="big-word pulse">${state.selectedWord}</div>
-                        <div class="small-timer">VOLTANDO EM ${showCount}s</div>
+                        <div class="small-timer">Fechando em ${showCount}s</div>
                     `;
                     
                     const box = document.getElementById('peekWordBox');
@@ -558,7 +615,7 @@
                         showCount--;
                         if (showCount > 0) {
                             const timerText = content.querySelector('.small-timer');
-                            if(timerText) timerText.textContent = `VOLTANDO EM ${showCount}s`;
+                            if(timerText) timerText.textContent = `Fechando em ${showCount}s`;
                         } else {
                             clearInterval(outTimer);
                             overlay.style.display = 'none';
@@ -568,13 +625,16 @@
             }, 1000);
         }
 
-        // --- ETAPA 3 ---
+        // --- ETAPA 3: LÓGICA ---
         function goToStep3() {
             showScreen('step3');
-            saveToHistory(); // Salva a partida quando finaliza
+            saveToHistory();
             const container = document.getElementById('s3Content');
             let count = 3;
-            container.innerHTML = `<div class="flex-1 flex items-center justify-center"><div class="countdown pulse">${count}</div></div>`;
+            container.innerHTML = `<div class="flex-1 flex flex-col items-center justify-center">
+                <div class="countdown pulse">${count}</div>
+                <p class="mt-8 text-slate-500 font-bold uppercase tracking-widest text-[10px]">Passando o celular...</p>
+            </div>`;
 
             const timer = setInterval(() => {
                 count--;
@@ -594,27 +654,27 @@
                 <div class="final-header">
                     <div id="finalWord" class="big-word">${state.selectedWord}</div>
                 </div>
-                <div class="grid-container mt-4">
+                <div class="grid-container mt-8">
                     <div id="finalGrid" class="grid-zone"></div>
                 </div>
             `;
 
             const finalWord = document.getElementById('finalWord');
-            setTimeout(() => adjustMainWordFont(finalWord, state.selectedWord, 80), 50);
+            setTimeout(() => adjustMainWordFont(finalWord, state.selectedWord, 85), 50);
 
             const grid = document.getElementById('finalGrid');
             state.tips.forEach(tip => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'word-wrapper m-1';
-                
-                const item = document.createElement('div');
-                item.className = 'tip-box';
-                item.textContent = tip;
-                
-                wrapper.appendChild(item);
-                grid.appendChild(wrapper);
-                
-                setTimeout(() => adjustTipFont(item), 50);
+                if(tip && tip !== "DICA") {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'word-wrapper m-1';
+                    const item = document.createElement('div');
+                    item.className = 'tip-box';
+                    item.style.borderColor = 'var(--accent-glow)';
+                    item.textContent = tip;
+                    wrapper.appendChild(item);
+                    grid.appendChild(wrapper);
+                    setTimeout(() => adjustTipFont(item), 50);
+                }
             });
         }
 
@@ -622,7 +682,11 @@
             state.selectedWord = "";
             state.tips = [];
             const s1Content = document.getElementById('s1Content');
-            if(s1Content) s1Content.innerHTML = `<button onclick="runS1Lottery()" class="btn-action btn-danger px-12 py-8 text-2xl shadow-xl shadow-red-900/20">SORTEAR</button>`;
+            if(s1Content) s1Content.innerHTML = `
+                <div class="text-center">
+                    <p class="text-slate-400 text-sm mb-6">Toque para sortear sua palavra secreta</p>
+                    <button onclick="runS1Lottery()" class="btn-action btn-danger px-14 py-8 text-2xl shadow-2xl shadow-red-500/20">SORTEAR</button>
+                </div>`;
             showScreen('step1');
         }
 
