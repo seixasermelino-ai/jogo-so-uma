@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Palavras em Foco - 3 Etapas</title>
+    <title>Palavras em Foco - Party Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         
+        :root {
+            --accent-color: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.5);
+        }
+
         body, html {
             height: 100%;
             height: 100svh;
@@ -18,6 +23,7 @@
             background-color: #0f172a;
             color: #f8fafc;
             -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.5s ease;
         }
 
         .app-container {
@@ -43,7 +49,20 @@
             display: flex;
         }
 
-        /* --- COMUM --- */
+        /* --- TEMAS --- */
+        .theme-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: transform 0.2s;
+        }
+        .theme-dot.active {
+            border-color: white;
+            transform: scale(1.2);
+        }
+
+        /* --- BOTÕES --- */
         .btn-action {
             padding: 1rem 1.5rem;
             border-radius: 1rem;
@@ -58,25 +77,14 @@
             user-select: none;
         }
         .btn-action:active { transform: scale(0.95); }
-        .btn-primary { background: #38bdf8; color: #0f172a; }
+        .btn-primary { background: var(--accent-color); color: #0f172a; }
         .btn-danger { background: #ef4444; color: white; }
         .btn-success { background: #10b981; color: white; }
         .btn-ghost { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
 
-        /* --- ETAPA 1: SORTEIO --- */
-        .step-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2rem;
-            text-align: center;
-        }
-
         .big-word {
-            color: #38bdf8;
-            text-shadow: 0 0 40px rgba(56, 189, 248, 0.5);
+            color: var(--accent-color);
+            text-shadow: 0 0 40px var(--accent-glow);
             font-weight: 900;
             text-transform: uppercase;
             text-align: center;
@@ -88,7 +96,7 @@
             overflow: hidden;
         }
 
-        /* --- ETAPA 2 & 3: DICAS --- */
+        /* --- DICAS --- */
         .grid-container {
             flex: 1;
             overflow-y: auto;
@@ -147,7 +155,6 @@
             opacity: 0.8;
         }
 
-        /* --- BARRA DE NAVEGAÇÃO --- */
         .nav-bar {
             position: fixed;
             bottom: 24px;
@@ -160,26 +167,21 @@
             justify-content: center;
         }
 
-        /* --- ETAPA 3: FINAL --- */
         .final-header {
             flex: 0 0 25vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 2px dashed rgba(56, 189, 248, 0.3);
+            border-bottom: 2px dashed var(--accent-glow);
             padding: 1.5rem;
             width: 100%;
         }
 
-        /* Overlay para o "Espiar" e "Trocar" */
         #peekOverlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: #0f172a;
-            z-index: 200;
+            z-index: 500;
             display: none;
             flex-direction: column;
             align-items: center;
@@ -187,7 +189,15 @@
             padding: 1.5rem;
         }
 
-        /* ANIMAÇÕES */
+        /* HISTÓRICO CARD */
+        .history-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--accent-color);
+        }
+
         .pulse { animation: pulseAnim 1s infinite; }
         @keyframes pulseAnim {
             0%, 100% { transform: scale(1); opacity: 1; }
@@ -216,12 +226,25 @@
         
         <!-- ETAPA 1: SORTEIO -->
         <div id="step1" class="screen active">
+            <div class="flex justify-between items-start w-full px-2 mt-4">
+                <button onclick="showHistory()" class="btn-ghost p-3 rounded-full">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </button>
+                <div class="flex gap-3">
+                    <div onclick="setTheme('#38bdf8')" class="theme-dot active" style="background: #38bdf8;"></div>
+                    <div onclick="setTheme('#a855f7')" class="theme-dot" style="background: #a855f7;"></div>
+                    <div onclick="setTheme('#ec4899')" class="theme-dot" style="background: #ec4899;"></div>
+                    <div onclick="setTheme('#f59e0b')" class="theme-dot" style="background: #f59e0b;"></div>
+                </div>
+            </div>
+
             <div class="step-container">
-                <h2 class="text-slate-500 font-bold uppercase tracking-widest text-sm mb-4">Etapa 1: Palavra Chave</h2>
+                <h2 class="text-slate-500 font-bold uppercase tracking-widest text-sm mb-4">Sorteie sua Palavra</h2>
                 <div id="s1Content" class="flex flex-col items-center justify-center gap-8 w-full p-4 min-h-[40vh] overflow-hidden">
                     <button onclick="runS1Lottery()" class="btn-action btn-danger px-12 py-8 text-2xl shadow-xl shadow-red-900/20">SORTEAR</button>
                 </div>
             </div>
+            <p class="text-center text-[10px] text-slate-600 mb-8 uppercase font-bold tracking-tighter">Escolha uma cor para identificar seu celular</p>
         </div>
 
         <!-- ETAPA 2: DICAS -->
@@ -256,9 +279,9 @@
             </div>
         </div>
 
-        <!-- OVERLAY DE ESPIADA / TROCA -->
+        <!-- OVERLAY DE HISTÓRICO / ESPIADA -->
         <div id="peekOverlay">
-            <div id="peekContent" class="flex flex-col items-center justify-center w-full h-full"></div>
+            <div id="peekContent" class="flex flex-col items-center justify-center w-full h-full overflow-y-auto"></div>
         </div>
 
     </div>
@@ -267,7 +290,8 @@
         let commonWords = ["FOCO", "FORÇA", "FÉ", "VIDA", "PAZ", "BRASIL", "UNIÃO", "SONHO", "IDEIA"];
         let state = {
             selectedWord: "",
-            tips: []
+            tips: [],
+            theme: '#38bdf8'
         };
         let wakeLock = null;
 
@@ -282,6 +306,59 @@
             } catch (e) {}
         }
 
+        // --- SISTEMA DE TEMA ---
+        function setTheme(color) {
+            state.theme = color;
+            document.documentElement.style.setProperty('--accent-color', color);
+            document.documentElement.style.setProperty('--accent-glow', color + '80');
+            
+            document.querySelectorAll('.theme-dot').forEach(dot => {
+                dot.classList.remove('active');
+                if(dot.style.background.includes(color) || dot.getAttribute('onclick').includes(color)) {
+                    dot.classList.add('active');
+                }
+            });
+        }
+
+        // --- HISTÓRICO ---
+        function saveToHistory() {
+            const history = JSON.parse(localStorage.getItem('game_history') || '[]');
+            const entry = {
+                word: state.selectedWord,
+                tips: state.tips.filter(t => t.length > 0),
+                date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                theme: state.theme
+            };
+            history.unshift(entry);
+            localStorage.setItem('game_history', JSON.stringify(history.slice(0, 10))); // Salva os últimos 10
+        }
+
+        function showHistory() {
+            const overlay = document.getElementById('peekOverlay');
+            const content = document.getElementById('peekContent');
+            const history = JSON.parse(localStorage.getItem('game_history') || '[]');
+            
+            overlay.style.display = 'flex';
+            content.innerHTML = `
+                <h3 class="text-sky-400 font-black mb-6 uppercase tracking-widest">Últimas Partidas</h3>
+                <div class="w-full max-h-[70vh] overflow-y-auto px-2">
+                    ${history.length === 0 ? '<p class="text-center text-slate-500 italic">Nenhum registro ainda...</p>' : ''}
+                    ${history.map(item => `
+                        <div class="history-card" style="border-left-color: ${item.theme}">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-black text-white">${item.word}</span>
+                                <span class="text-[10px] text-slate-500">${item.date}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1">
+                                ${item.tips.map(t => `<span class="text-[9px] bg-white/10 px-2 py-1 rounded text-slate-300 uppercase font-bold">${t}</span>`).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <button onclick="document.getElementById('peekOverlay').style.display='none'" class="btn-action btn-danger mt-8 w-full">FECHAR</button>
+            `;
+        }
+
         async function requestWakeLock() {
             try {
                 if ('wakeLock' in navigator) {
@@ -290,12 +367,6 @@
             } catch (err) {}
         }
 
-        document.addEventListener('visibilitychange', async () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') {
-                requestWakeLock();
-            }
-        });
-
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -303,14 +374,9 @@
 
         function adjustMainWordFont(el, word, customMax = 120) {
             if (!el) return;
-            // Largura disponível com margem de segurança maior para evitar quebra/transbordo
             const containerWidth = el.parentElement.offsetWidth * 0.85; 
             const containerHeight = el.parentElement.offsetHeight * 0.6;
-            
-            // Cálculo baseado na quantidade de caracteres para evitar estourar largura
             let fontSize = containerWidth / (word.length * 0.65);
-            
-            // Aplica limites
             fontSize = Math.min(fontSize, containerHeight, customMax);
             el.style.fontSize = fontSize + 'px';
         }
@@ -424,7 +490,6 @@
             el.style.fontSize = Math.min(Math.max(fontSize, 16), 28) + 'px';
         }
 
-        // FUNÇÃO TROCAR PALAVRA (Ajustada para esperar 5 segundos)
         function changeWordProcess() {
             const overlay = document.getElementById('peekOverlay');
             const content = document.getElementById('peekContent');
@@ -450,7 +515,6 @@
                     const box = document.getElementById('newWordBox');
                     setTimeout(() => adjustMainWordFont(box, state.selectedWord, 180), 50);
 
-                    // Contador de 5 segundos para visualização
                     const viewTimer = setInterval(() => {
                         showCount--;
                         if (showCount > 0) {
@@ -465,7 +529,6 @@
             }, 1000);
         }
 
-        // FUNÇÃO ESPIAR (PEEK)
         function peekWord() {
             const overlay = document.getElementById('peekOverlay');
             const content = document.getElementById('peekContent');
@@ -508,6 +571,7 @@
         // --- ETAPA 3 ---
         function goToStep3() {
             showScreen('step3');
+            saveToHistory(); // Salva a partida quando finaliza
             const container = document.getElementById('s3Content');
             let count = 3;
             container.innerHTML = `<div class="flex-1 flex items-center justify-center"><div class="countdown pulse">${count}</div></div>`;
